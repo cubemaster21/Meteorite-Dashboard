@@ -162,6 +162,9 @@ function CSVToArray( strData, strDelimiter ){
 	return( arrData );
 }
 function getOrdinalEnding(num){
+	var special = Math.abs(num) % 100;
+	if(special == 11 || special == 12 || special == 13) return "th";
+
 	switch(Math.abs(num) % 10){
 		case 1: 
 		return "st";
@@ -192,14 +195,38 @@ function translateIndexToCoords(index, width, height){
 	var y = Math.floor(index / width);
 	return [x, y];
 }
+function translateRegionLabelToCoords(label){
+	var x = 0;
+	var y = 0;
+	var charCount = 0;
+	for(var i = label.length - 1; i > -1;i--){
+		for(var j = 0;j < chars.length;j++){
+
+			if(label.charAt(i) === chars[j]){
+				x += j + (charCount * 26)
+				charCount++;
+				break;
+			}
+		}
+	}
+	var number = label.substring(charCount);
+	y = Math.floor(number);
+	console.log("y: " + y)
+	return {x: x,y: y};
+}
 function getRegionLabel(x, y){
-	var chars = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+	
 	var name = "";
-	var i =0;
-	do {
-		name += chars[(x - i * 26)];
-		i++;
-	} while(i < x / 26);
+	// Uses Excel column naming convention
+	var dividend = x + 1;
+	var modulo = 0;
+	while(dividend > 0){
+		modulo = (dividend - 1) % 26;
+		name = chars[modulo] + name;
+		dividend = Math.floor((dividend - modulo) / 26); 
+	}
+
+
 	name += y;
 	return name;
 }

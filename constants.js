@@ -26,3 +26,4 @@ var tableHeaders = "<th>Name</th><th>ID</th><th>Nametype</th><th>RecClass</th><t
 
 var brickVolume = 1064.532; // mililiters
 var brickMass = 2041.17; // grams
+var chars = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];

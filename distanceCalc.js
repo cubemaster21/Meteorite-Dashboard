@@ -13,6 +13,7 @@ var sqrtValuesOnMap = true;
 var massDistributionChart;
 var massDistributionChartExists = false;
 var massGroupLineChart;
+var autoFeedPosition = false;
 /*
 *Loads the resource CSV and sanitizes it to remove any entries that cannot be used due to missing information
 */
@@ -294,6 +295,7 @@ function sortCollectionByAge(collection){
 }
 //largest, most frequent, most affected, largest percentile mass
 function processClick(event){
+
 	var x = event.x;
 	var y = event.y;
 	var canvas = document.getElementById("US-Map");
@@ -307,8 +309,24 @@ function processClick(event){
 	var xCoord = Math.floor(x / longInterval);
 	var yCoord = Math.floor(y / latInterval);
 	// console.log(xCoord + ", " + yCoord);
+	
+
+	if(autoFeedPosition){
+		console.log("AUTO FEEDING");
+		xCoord = event.x;
+		yCoord = event.y;
+		autoFeedPosition = false;
+	}
+
+
 	var finalPos = xCoord + yCoord * USAHorizonScale;
+
+
+
+
+
 	t_lastClickPosition = finalPos;
+	console.log(xCoord + ", " + yCoord);
 	if(tempMapGrid === null){
 		return;
 	}
@@ -323,6 +341,9 @@ function processClick(event){
 
 	if(tempMapGrid[finalPos].length === 0){
 		//No entries in region
+		alert("No entries in the selected region");
+		document.getElementById("selectedAreaInfo").style.display = "none";
+		document.getElementById("massCategoryLineChart").style.display = "none";
 		return;
 	}
 
@@ -347,12 +368,13 @@ function processClick(event){
 	update("SubsetChanceNextYear", getChanceOfNextInXYears(tempMapGrid[finalPos], 1.0).toFixed(4));
 	update("SubsetChanceNext5Years", getChanceOfNextInXYears(tempMapGrid[finalPos], 5.0).toFixed(4));
 	update("SubsetDangerRank", findRankOfDangerousnessOfArea(finalPos) + getOrdinalEnding(findRankOfDangerousnessOfArea(finalPos)) + " out of " + (USAHorizonScale * USAVerticalScale));
-	
+	document.getElementById("selectedAreaInfo").style.display = "block";
 	updateMassDistributionGraph(document.getElementById("distributionMode").value, tempMapGrid[finalPos]);
 
 	createMultiLineMassChart(tempMapGrid[finalPos]);
-
-	console.log(finalPos + " FAIL: " + translateIndexToCoords(finalPos, USAHorizonScale, USAVerticalScale))
+	
+	highlightDangerRankInListing(getRegionLabel(xCoord, yCoord));
+	// console.log(finalPos + " FAIL: " + translateIndexToCoords(finalPos, USAHorizonScale, USAVerticalScale))
 
 }
 function exportData(){
@@ -447,6 +469,7 @@ function updateHeatmapParameters(){
 	}
 	initMap(mapGrid);
 	subCollection = getAmericanMeteorites();
+	postDangerRankings();
 	// getInterquartileRange(subCollection);
 	
 	// console.log(getLatitudeValueDistribution("count", latDist));
@@ -778,7 +801,7 @@ function getPercentile(sortedArray, value){
 	return Math.round(highestIndex / sortedArray.length * 100, 0);
 }
 function createMultiLineMassChart(collection){
-
+	document.getElementById("massCategoryLineChart").style.display = "block";
 	if(massGroupLineChart != null){
 		massGroupLineChart.destroy();
 	}
@@ -862,3 +885,32 @@ function findRankOfDangerousnessOfArea(index){
 	}
 	return -1;
 }
+function postDangerRankings(){
+	var container = document.getElementById("rankingsList");
+	var rankings = rankAreaByDanger();
+	var text = "";
+	for(var i = 0;i < rankings.length;i++){
+		text += (i + 1) + ": <a id=\"rankPosting" + (i+1) + "\" href=\"#\">" + rankings[i][0] + "</a> (" + rankings[i][1].toFixed(5) + ")<br>";
+	}
+	container.innerHTML = text;
+
+	for(var i = 0;i < rankings.length;i++){
+		
+		$('#rankPosting' + (i + 1)).click(function(){
+			var label = this.innerHTML;
+			var coords = translateRegionLabelToCoords(label);
+			var event = {x:coords.x, y: coords.y};
+			autoFeedPosition = true;
+			
+			processClick(event);
+		});
+	}
+}
+function highlightDangerRankInListing(label){
+	var rankings = rankAreaByDanger();
+	for(var i = 0;i < rankings.length;i++){
+		var element = document.getElementById("rankPosting" + (i+1));
+		element.style.backgroundColor = (element.innerHTML === label) ? "#FF0000" : "transparent";
+	}
+}
+

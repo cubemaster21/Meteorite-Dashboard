@@ -50,7 +50,8 @@
 			<input type="range" name="chronoPos" value="0" min="0" max="1" id="chronoPosSlider" onInput="updateChronoPos();" style="width:100%">
 			<span id="extraParameters"></span>
 		</div>
-		<div class="container3" id="selectedAreaInfo"> <h1>Selected Area Info:</h1></br>
+		<div class="container3" id="selectedAreaInfo" style="display: none">
+		<h1 class="containerHeader">Selected Area Info</h1></br>
 			<span class="containerDivider">
 				<table>
 					<tr>
@@ -149,8 +150,8 @@
 			</span>
 			<div id="USTable"></div>
 		</div>
-		<div class="container4">
-			<h1>Mass Category count over the years, starting in 1900</h1></br>
+		<div class="container4" id="massCategoryLineChart" style="display: none">
+			<h1 class="containerHeader">Mass Category count over the years, starting in 1900</h1></br>
 			<input type="checkbox" id="lineChartCheckbox0" checked onChange="refreshMassGroupLineChart();"><span id="lcc0">&lt 0.5kg</span>
 			<input type="checkbox" id="lineChartCheckbox1" checked onChange="refreshMassGroupLineChart();"><span id="lcc1">0.5kg - 1kg</span>
 			<input type="checkbox" id="lineChartCheckbox2" checked onChange="refreshMassGroupLineChart();"><span id="lcc2">1kg - 5kg</span>
@@ -162,6 +163,12 @@
 			<input type="checkbox" id="lineChartCheckbox8" checked onChange="refreshMassGroupLineChart();"><span id="lcc8">&gt 1000kg</span>
 			<span style="float: right;"><input type="checkbox" id="lineChartCumulative" unchecked onChange="refreshMassGroupLineChart();">Cumulative</span>
 			<canvas id="massGroupLineChart"></canvas>
+		</div>
+		<div class="container3">
+			<h1 class="containerHeader">Danger Rankings</h1>
+			<h3>What are danger rankings?</h3>
+			<div id="rankingDescription">Our danger ranking system is created by calculating the probability that a meteorite will fall in a given area within the next year.</div>
+			<div id="rankingsList"></div>
 		</div>
 	</body>
 </html>
