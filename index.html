@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+	<head>
+		<link rel="stylesheet" href="style.css">
+		<script type="text/javascript" src="http://www.chartjs.org/assets/Chart.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+		<!--<script type="text/javascript" src="loadEntries.js"></script>-->
+		<script type="text/javascript" src="FileSaver.js"></script>
+		<script type="text/javascript" src="constants.js"></script>
+		<script type="text/javascript" src="helper.js"></script>
+		<script type="text/javascript" src="distanceCalc.js"></script>
+		<script type="text/javascript" src="jquery.tablesorter.min.js"></script>
+	</head>
+	<body onload="initPage();">
+		
+		<!--<form id="coordinates">
+			Latitude <input type="text" name="lat" value="38.3606736">
+			Longitude <input type="text" name="lon" value="-75.59936920000001">
+			Distance <input type="text" name="dis" value="500">
+			<input id="confirmCoordinates" type="button" value="GO" >
+		</form>
+		<!--What size of meteorite follows concern
+		frequency over past century
+		areas of concern 
+	-->
+		<div class="container3">
+			<canvas id="US-Map"></canvas>
+			Precision(<span id="hpro">10</span>):<input type="range" name="heatmapPrecision" value="10" min="1" max="50" id="heatmapPrecisionSlider" onInput="updateHeatmapParameters();"></br>
+			Grid Radius(<span id="gridRadius"></span>)</br>
+			Sqrt values:<input type="checkbox" id="sqrtCheckbox" onChange="updateHeatmapParameters();" checked></br>
+			<select id="heatmapDisplayOptions" onChange="updateHeatmapParameters();">
+				<option value="-1">Quantity</option>
+				<option value="0">Mass &lt 0.5kg</option>
+				<option value="1">Mass 0.5kg - 1kg</option>
+				<option value="2">Mass 1kg - 5kg</option>
+				<option value="3">Mass 5kg - 10kg</option>
+				<option value="4">Mass 10kg - 50kg</option>
+				<option value="5">Mass 50kg - 100kg</option>
+				<option value="6">Mass 100kg - 500kg</option>
+				<option value="7">Mass 500kg - 1000kg</option>
+				<option value="8">Mass &gt 1000kg</option>
+
+			</select></br></br>
+			<hr></br>
+			<button type="button" onclick="doChronoAnimation();">Play Chrono from Position</button>
+			<button type="button" onclick="pauseChronoAnimation();">Pause</button></br>
+			ChronoSpeed(<span id="csPrec">100</span>ms):
+			<input type="range" name="chronoSpeed" value="100" min="50" max="1000" id="chronoSpeedSlider" onInput="updateChronoSpeed();"></br>
+			ChronoPosition:
+			<input type="range" name="chronoPos" value="0" min="0" max="1" id="chronoPosSlider" onInput="updateChronoPos();" style="width:100%">
+			<span id="extraParameters"></span>
+		</div>
+		<div class="container3" id="selectedAreaInfo"> <h1>Selected Area Info:</h1></br>
+			<span class="containerDivider">
+				<table>
+					<tr>
+						<td>Subset Label</td>
+						<td><div id="SubsetLabel" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Oldest Meteorite in Subset</td>
+						<td><div id="SubsetOldest" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Latest Meteorite in Subset</td>
+						<td><div id="SubsetNewest" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Interquartile Range of Mass</td>
+						<td><div id="SubsetIQR" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Average Mass of Subset</td>
+						<td><div id="SubsetAverageMass" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Average Mass in US</td>
+						<td><div id="USAverageMass" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Mass Range Expectation</td>
+						<td><div id="SubsetMassRangeExpectation" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Mass Range Expectation for US</td>
+						<td><div id="USMassRangeExpectation" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Standard Deviation of Mass</td>
+						<td><div id="SubsetStandardDeviation" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Standard Deviation of Mass for US</td>
+						<td><div id="USStandardDeviation" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Mean Meteorites per Year <span id="yearRange1"></span></td>
+						<td><div id="SubsetMeteoritesPerYear" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Mean Meteorites per Year for US <span id="yearRange2"></span></td>
+						<td><div id="USMeteoritesPerYear" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Mean Meteorites per Year percentile</td>
+						<td><div id="SubsetAmpyPercentile" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Entries in Subset</td>
+						<td><div id="SubsetEntries" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Entries in US</td>
+						<td><div id="USEntries" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Next predicted meteorite report</td>
+						<td><div id="SubsetPredictedTime" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Chance of Meteorite in the next year</td>
+						<td><div id="SubsetChanceNextYear" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Chance of Meteorite in the next 5 years</td>
+						<td><div id="SubsetChanceNext5Years" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Dangerousness Rank</td>
+						<td><div id="SubsetDangerRank" class="property"></div></td>
+					</tr>
+				</table>
+				</br>
+				
+				
+				
+				<select id="tableValueDisplayMod" onChange="updateTableValueDisplay();">
+					<option value="0">Show All Entries</option>
+					<option value="1">Show Only Standard Values</option>
+					<option value="2">Show Only Extreme Values</option>
+				</select></br>
+			</span><span class="containerDivider">
+				<button type="button" onClick="exportData();">Export</button>
+				<canvas id="massDistributionChart" class="barChart"></canvas></br>
+				<select id="distributionMode" onChange="updateMassDistributionGraph(null, null);">
+					<option value="1">Frequency</option>
+					<option value="2">Percentage</option>
+				</select>
+			</span>
+			<div id="USTable"></div>
+		</div>
+		<div class="container4">
+			<h1>Mass Category count over the years, starting in 1900</h1></br>
+			<input type="checkbox" id="lineChartCheckbox0" checked onChange="refreshMassGroupLineChart();"><span id="lcc0">&lt 0.5kg</span>
+			<input type="checkbox" id="lineChartCheckbox1" checked onChange="refreshMassGroupLineChart();"><span id="lcc1">0.5kg - 1kg</span>
+			<input type="checkbox" id="lineChartCheckbox2" checked onChange="refreshMassGroupLineChart();"><span id="lcc2">1kg - 5kg</span>
+			<input type="checkbox" id="lineChartCheckbox3" checked onChange="refreshMassGroupLineChart();"><span id="lcc3">5kg - 10kg</span>
+			<input type="checkbox" id="lineChartCheckbox4" checked onChange="refreshMassGroupLineChart();"><span id="lcc4">10kg - 50kg</span>
+			<input type="checkbox" id="lineChartCheckbox5" checked onChange="refreshMassGroupLineChart();"><span id="lcc5">50kg - 100kg</span>
+			<input type="checkbox" id="lineChartCheckbox6" checked onChange="refreshMassGroupLineChart();"><span id="lcc6">100kg - 500kg</span>
+			<input type="checkbox" id="lineChartCheckbox7" checked onChange="refreshMassGroupLineChart();"><span id="lcc7">500kg - 1000kg</span>
+			<input type="checkbox" id="lineChartCheckbox8" checked onChange="refreshMassGroupLineChart();"><span id="lcc8">&gt 1000kg</span>
+			<span style="float: right;"><input type="checkbox" id="lineChartCumulative" unchecked onChange="refreshMassGroupLineChart();">Cumulative</span>
+			<canvas id="massGroupLineChart"></canvas>
+		</div>
+	</body>
+</html>

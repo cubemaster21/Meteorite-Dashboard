@@ -1,0 +1,103 @@
+/* Sortable tables */
+* {
+	margin: auto;
+	color: #dddddd;
+
+}
+select {
+	color: black;
+}
+button {
+	color: black;
+}
+body{
+	background-color: #293c5b;
+}
+table.sortable thead {
+    background-color:#eee;
+    color: black;
+    font-weight: bold;
+    cursor: default;
+}
+#materialChart {
+	float: right;
+	position: relative;
+	right: 30px;
+}
+#fallChart {
+	float: left;
+	position: relative;
+	left: 30px;
+}
+#US-Map {
+	width: 100%;
+	height: 500px;
+}
+#latDistGraph {
+	width: 100%;
+	height: 500px;
+}
+.container3 {
+	width: 60%;
+	height: auto;
+	display: block;
+	padding: 25px;
+	background-color: #3762a8;
+	position: relative;
+	margin-bottom: 10px;
+
+}
+.container4 {
+	
+	height: 90%;
+	width: 60%;
+	display: block;
+	padding: 25px;
+	background-color: #3762a8;
+	position: relative;
+	margin-bottom: 10px;
+}
+.containerDivider {
+	display: inline-block;
+	margin: 1px;
+
+	width: 49%;
+	height: 100%;
+}
+.container3 table{
+	background-color: #dddddd;
+	border: 1px solid black;
+}
+.container3 table td{
+	border: 1px solid black;
+}
+.barChart {
+	display: block;
+	width: 100%;
+	height: 335px;
+	padding: 0;
+	background-color: #2f2f2f;
+	padding: 3px;
+	vertical-align: text-top;
+}
+#massGroupLineChart {
+	width: 100%;
+	height: 100%;
+	background-color: #dddddd;
+}
+#USTable {
+	background-color: #dddddd;
+	color: black;
+	height: 400px;
+	padding: 5px;
+	margin-top: 10px;
+	overflow-y: auto;
+
+}
+table *{
+	color: black;
+}
+.property {
+	text-align: right;
+	width: 250px;
+}
