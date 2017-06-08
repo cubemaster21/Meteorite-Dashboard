@@ -7,13 +7,18 @@ var USAGridRadius = 0; // This is set later
 var database;
 var subCollection;
 var americanCollectionStore;
-var t_lastClickPosition;
+var t_lastClickPosition = -1;
 var tempMapGrid;
 var sqrtValuesOnMap = true;
 var massDistributionChart;
 var massDistributionChartExists = false;
 var massGroupLineChart;
 var autoFeedPosition = false;
+var drawRanks = false;
+
+var lastRankResolution = -1;
+var lastRankings;
+
 /*
 *Loads the resource CSV and sanitizes it to remove any entries that cannot be used due to missing information
 */
@@ -72,7 +77,7 @@ function LoadFile() {
 			}
 		}
 		updateHeatmapParameters();
-		initMap(checkAmericanGrid());
+		drawMap(checkAmericanGrid());
 		initListeners();
 		document.getElementById("chronoPosSlider").max = getAmericanMeteorites().length - 1;
 	});
@@ -270,10 +275,10 @@ function drawLatitudeDistributionGraph(key, valueSet){
 function getOldestMeteorite(collection){
 	var oldest = collection[0];
 	for(var i = 0;i < collection.length;i++){
-	if(oldest === null || collection[i][year] < oldest[year]){
-		oldest = collection[i];
+		if(oldest === null || collection[i][year] < oldest[year]){
+			oldest = collection[i];
+		}
 	}
-}
 	return oldest;
 }
 function getNewestMeteorite(collection){
@@ -418,33 +423,9 @@ function update(div, value){
 function getPair(div){
 	return div + ": " + document.getElementById(div).innerHTML + "\r\n";
 }
-function initMap(mapGrid){
-	var mapCanvas = drawGeoMap();
-	var ctx = mapCanvas.getContext("2d");
-
-	var highest = 0;
-
-	for(var i = 0;i < mapGrid.length;i++){
-		if(mapGrid[i].length > highest) highest = mapGrid[i].length;
-	}
-	var latInterval = mapCanvas.height / USAVerticalScale;
-	var longInterval = mapCanvas.width / USAHorizonScale;
-
-
-	for(var i = 0;i < mapGrid.length;i++){
-		var r_a;
-		if(sqrtValuesOnMap)
-			r_a = Math.min(Math.sqrt(mapGrid[i].length / highest) , 1); 
-		else
-			r_a = Math.min(mapGrid[i].length / highest, 1);
-		ctx.fillStyle = "rgba(255, 0, 0, " + r_a + ")";
-		//console.log(i / USAHorizonScale);
-		ctx.fillRect( (i % USAHorizonScale) * longInterval,mapCanvas.height - Math.floor(i / USAHorizonScale) * latInterval - latInterval, longInterval, latInterval);
-	}
-
-}
 function updateHeatmapParameters(){
 	sqrtValuesOnMap = document.getElementById("sqrtCheckbox").checked;
+	drawRanks = document.getElementById("drawDangerRanks").checked;
 	USAHorizonScale = Math.floor(document.getElementById("heatmapPrecisionSlider").value);
 	var displayMode = parseInt(document.getElementById("heatmapDisplayOptions").value);
 	document.getElementById("hpro").innerHTML = USAHorizonScale;
@@ -467,7 +448,7 @@ function updateHeatmapParameters(){
 		}
 		mapGrid = massMapGrid;
 	}
-	initMap(mapGrid);
+	drawMap(mapGrid, t_lastClickPosition);
 	subCollection = getAmericanMeteorites();
 	postDangerRankings();
 	// getInterquartileRange(subCollection);
@@ -676,6 +657,9 @@ function getGridPosition(entry){
 	 return -1;
 }
 function drawMap(mapGrid, positionHighlighted){
+
+
+
 	var mapCanvas = drawGeoMap();
 	var ctx = mapCanvas.getContext("2d");
 	var highest = 0;
@@ -701,6 +685,13 @@ function drawMap(mapGrid, positionHighlighted){
 			ctx.fillStyle = "rgba(0, 0, 255, 255)";
 			ctx.strokeRect((i % USAHorizonScale) * longInterval,mapCanvas.height - Math.floor(i / USAHorizonScale) * latInterval - latInterval, longInterval, latInterval)
 		}
+		if(drawRanks){
+			ctx.font = "9px Arial";
+			ctx.fillStyle = "black";
+			ctx.textAlign = "center";
+			var rank = findRankOfDangerousnessOfArea(i); 
+			ctx.fillText("" + rank +  getOrdinalEnding(rank),  (i % USAHorizonScale) * longInterval + longInterval / 2,mapCanvas.height - Math.floor(i / USAHorizonScale) * latInterval - latInterval + latInterval / 2);
+		}
 	}
 
 	return ctx;
@@ -714,6 +705,7 @@ function drawGeoMap(){
 	return mapCanvas;
 }
 function getStandardDeviation(collection){
+	if(collection.length === 1) return 0;
 	var avgMass = getAverageMass(collection);
 	var total = 0;
 	for(var i = 0;i < collection.length;i++){
@@ -858,6 +850,9 @@ function getChanceOfNextInXYears(collection, years){
 	return prob;
 }
 function rankAreaByDanger(){
+
+	if(USAHorizonScale === lastRankResolution) return lastRankings;
+
 	var dataPairs = [];
 	for(var i = 0;i < tempMapGrid.length;i++){
 		var value = [];
@@ -873,6 +868,9 @@ function rankAreaByDanger(){
 		if(a[1] > b[1]) return -1;
 		return 0;
 	});
+	//set cached copy
+	lastRankings = dataPairs;
+	lastRankResolution = USAHorizonScale;
 
 	return dataPairs;
 }
