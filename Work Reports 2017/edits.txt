@@ -1,0 +1,16 @@
+abstract 
+	talk about IQR, tools(confidence intervals)(stats tools)
+INTRO
+	example of research significance (lunar meteorite)
+
+why o we care?
+history of the dataset(when did it start?....etc, why was it started?)
+
+FINDINGS IQR
+	table of IQR (top / bottom 10)
+	largest meteorites
+	most frequent
+	least frequent
+	0 occurrences
+	Is there anything to be alarmed of
+	shift -> increased liklihood of sample gathering (1920)
