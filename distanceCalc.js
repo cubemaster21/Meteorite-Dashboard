@@ -157,6 +157,7 @@ function getAverageDistance(lat, lon, collection){
 * Returns the average mass of entries in a collection
 */
 function getAverageMass(collection){
+	if(collection.length === 0) return 0;
 	var average = 0;
 	for(var c = 0;c < collection.length;c++){
 			average += collection[c][mass];
@@ -204,6 +205,7 @@ function getMedianMass(collection, left, right){
 	if(typeof left === "undefined") left = 0;
 	if(typeof right === "undefined") right = collection.length;
 	var medianIndex = left + ((right - left) * 0.5);
+	if(medianIndex === 0) return -1;
 	if((right-left) % 2 === 0){
 		//if is whole number, there are an even number of elements
 		return ((collection[Math.max(medianIndex - 1, 0)][mass]) + (collection[Math.min(Math.max(medianIndex, 0), collection.length - 1)][mass])) * 0.5;
@@ -912,3 +914,39 @@ function highlightDangerRankInListing(label){
 	}
 }
 
+function rankAreasByAverageMassUsing(func){
+	var mapGridCopy = [];
+	for(var i = 0;i < tempMapGrid.length;i++){
+		mapGridCopy.push(tempMapGrid[i]);
+		var coords = translateIndexToCoords(i, USAHorizonScale, USAVerticalScale);
+		var label = getRegionLabel(coords[0], coords[1]);
+		mapGridCopy[i].areaLabel = label;
+	}
+	mapGridCopy = mapGridCopy.sort(function(a, b){
+		if((func(a) > func(b)) || isNaN(func(a))) return -1;
+		if((func(a) < func(b)) || isNaN(func(b))) return 1;
+		return 0;
+	});
+	for(var i = 0;i < mapGridCopy.length;i++){
+		console.log("Region:" + mapGridCopy[i].areaLabel + " | " + func(mapGridCopy[i]));
+	}
+
+}
+function getAverageMassUsingInterquartileValues(collection){
+	var range = getInterquartileRange(collection);
+	if(collection.length === 0) return 0;
+	var average = 0;
+	var count = 0;
+	for(var c = 0;c < collection.length;c++){
+			if(collection[c][mass] > range.upper || collection[c][mass] < range.lower) continue;
+			average += collection[c][mass];
+			count++;
+		}
+	return average / count;
+}
+function getAverageMassUsingSTDFilter(collection){
+	return getAverageMass(filterExtremeValues(collection));
+}
+//rankAreasByAverageMassUsing(getAverageMass);
+//rankAreasByAverageMassUsing(getAverageMassUsingInterquartileValues);
+//rankAreasByAverageMassUsing(getAverageMassUsingSTDFilter);
