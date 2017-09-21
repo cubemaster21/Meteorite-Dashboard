@@ -928,7 +928,7 @@ function rankAreasByAverageMassUsing(func){
 		return 0;
 	});
 	for(var i = 0;i < mapGridCopy.length;i++){
-		console.log("Region:" + mapGridCopy[i].areaLabel + " | " + func(mapGridCopy[i]));
+		console.log("Region:" + mapGridCopy[i].areaLabel + " | " + func(mapGridCopy[i]) + " | E:" + mapGridCopy[i].length);
 	}
 
 }
