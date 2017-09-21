@@ -162,7 +162,11 @@ function getAverageMass(collection){
 	for(var c = 0;c < collection.length;c++){
 			average += collection[c][mass];
 		}
-	return average / collection.length;
+	var ans = new Number(average / collection.length);
+	ans.entries = collection.length;
+	ans.min = 0;
+	ans.max = Number.POSITIVE_INFINITY;
+	return ans;
 }
 /*
 * organizes entries of the american meteorites subset into a grid system
@@ -928,7 +932,8 @@ function rankAreasByAverageMassUsing(func){
 		return 0;
 	});
 	for(var i = 0;i < mapGridCopy.length;i++){
-		console.log("Region:" + mapGridCopy[i].areaLabel + " | " + func(mapGridCopy[i]) + " | E:" + mapGridCopy[i].length);
+		var val = func(mapGridCopy[i]);
+		console.log("Region:" + mapGridCopy[i].areaLabel + " | " + val + " | E:" + val.entries + " | " + val.min + " - " + val.max);
 	}
 
 }
@@ -942,10 +947,20 @@ function getAverageMassUsingInterquartileValues(collection){
 			average += collection[c][mass];
 			count++;
 		}
-	return average / count;
+	var ans = new Number(average / count);
+	ans.entries = count;
+	ans.max = range.upper;
+	ans.min = range.lower;
+	return ans;
 }
 function getAverageMassUsingSTDFilter(collection){
-	return getAverageMass(filterExtremeValues(collection));
+	var normalValues = filterExtremeValues(collection)
+	var ans = getAverageMass(normalValues);
+	var stdev = getStandardDeviation(normalValues);
+	var medMass = getMedianMass(normalValues, 0, normalValues.length);
+	ans.min = medMass - stdev;
+	ans.max = medMass + stdev;
+	return ans;
 }
 //rankAreasByAverageMassUsing(getAverageMass);
 //rankAreasByAverageMassUsing(getAverageMassUsingInterquartileValues);
