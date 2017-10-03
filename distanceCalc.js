@@ -569,19 +569,20 @@ function updateMassDistributionGraph(displayMode, subcollection){
 	if(massDistributionChartExists)
 		massDistributionChart.destroy();
 	var ctx = document.getElementById("massDistributionChart").getContext("2d");
-	massDistributionChart = new Chart(ctx).Bar({
+
+	massDistributionChart = new Chart(ctx, {
+		type: 'bar',
+		data: {
 			labels: labels,
 			datasets: [{
 				label: 'Mass Grouping Distribution',
-				fillColor: '#dd6f25',
-				data: data
+				backgroundColor: '#dd6f25',
+				data: data,
 			}]
-		}, { 
-			scaleFontColor: "#dddddd",
-			scaleColor: '#dddddd'
-		}
-			
-	);
+		},
+		scaleFontColor: '#dddddd',
+		scaleColor: '#dddddd'
+	})
 	massDistributionChartExists = true;
 }
 function doChronoAnimation(){
@@ -822,10 +823,11 @@ function createMultiLineMassChart(collection){
 
 		
 
-		lineChartData.datasets.push({}); //creates a new dataset object
+		lineChartData.datasets.push({}); //creates a new data object
 		var dataset = lineChartData.datasets[i];
-		dataset.fillColor = "RGBA(0,0,0,0)";
-		dataset.strokeColor =  !document.getElementById("lineChartCheckbox" + i).checked ? "RGBA(1,1,1,0)" : getIndexColor(i);
+		dataset.backgroundColor = "RGBA(0,0,0,0)";
+		dataset.borderColor =  !document.getElementById("lineChartCheckbox" + i).checked ? "RGBA(1,1,1,0)" : getIndexColor(i);
+		console.log(dataset.strokeColor);
 		document.getElementById("lcc" + i).style.color = getIndexColor(i);
 		dataset.data = [];
 
@@ -843,7 +845,11 @@ function createMultiLineMassChart(collection){
 
 
 	var ctx = document.getElementById("massGroupLineChart").getContext("2d");
-	massGroupLineChart = new Chart(ctx).Line(lineChartData);
+	//massGroupLineChart = new Chart(ctx).Line(lineChartData);
+	massGroupLineChart = new Chart(ctx, {
+		type: 'line',
+		data: lineChartData
+	});
 	return lineChartData;
 }
 function refreshMassGroupLineChart(){
