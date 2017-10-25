@@ -17,10 +17,10 @@ var USAUpperLong = -65; // Eastern boundary of US
 var Rm = 3961; // mean radius of the earth (miles) at 39 degrees from the equator
 
 var flatWorldMap = new Image(); //Image for the world graphics
-    flatWorldMap.src = "flatMap.gif";
+    flatWorldMap.src = "img/flatMap.gif";
 
 var map = new Image(); // Image for the US graphics
-    map.src = "US-Map-Small.png";
+    map.src = "img/US-Map-Small.png";
 
 var tableHeaders = "<th>Name</th><th>ID</th><th>Nametype</th><th>RecClass</th><th>Mass (g)</th><th>Fall</th><th>Year</th><th>RecLat</th><th>RecLong</th><th>GeoLocation</th>";
 
