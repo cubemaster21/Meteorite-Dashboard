@@ -971,3 +971,11 @@ function getAverageMassUsingSTDFilter(collection){
 //rankAreasByAverageMassUsing(getAverageMass);
 //rankAreasByAverageMassUsing(getAverageMassUsingInterquartileValues);
 //rankAreasByAverageMassUsing(getAverageMassUsingSTDFilter);
+function convertAreaLabelToReference(areaLabel){
+	if(USAHorizonScale !== 10){
+		return;
+	}
+	var coords = translateRegionLabelToCoords(areaLabel);
+	var index = coords.x + coords.y * USAHorizonScale;
+	return standardReferenceNames[index];
+}
