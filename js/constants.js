@@ -77,6 +77,6 @@ var standardReferenceNames = [
 "Northern Michigan / Northeastern Wisconsin",
 "-",
 "-",
-"Maine",
+"Maine"
 
 ]

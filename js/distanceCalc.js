@@ -360,7 +360,7 @@ function processClick(event){
 
 	var nextPredictedForArea =parseFloat(getNewestMeteorite(tempMapGrid[finalPos])[year].getFullYear()) + parseFloat((1 / getAverageMeteoritesPerYear(tempMapGrid[finalPos])).toFixed(0));
 
-	update("SubsetLabel", getRegionLabel(xCoord, yCoord));
+	update("SubsetLabel", getRegionLabel(xCoord, yCoord) + " (" + convertAreaLabelToReference(getRegionLabel(xCoord, yCoord)) + ")");
 	update("SubsetNewest", getNewestMeteorite(tempMapGrid[finalPos])[name] + " (" + getNewestMeteorite(tempMapGrid[finalPos])[year].getFullYear() + ")");
 	update("SubsetOldest", getOldestMeteorite(tempMapGrid[finalPos])[name] + " (" + getOldestMeteorite(tempMapGrid[finalPos])[year].getFullYear() + ")");
 	update("SubsetIQR", getInterquartileRange(tempMapGrid[finalPos]).lower + "g to " + getInterquartileRange(tempMapGrid[finalPos]).upper + "g");
