@@ -664,9 +664,6 @@ function getGridPosition(entry){
 	 return -1;
 }
 function drawMap(mapGrid, positionHighlighted){
-
-
-
 	var mapCanvas = drawGeoMap();
 	var ctx = mapCanvas.getContext("2d");
 	var highest = 0;
@@ -681,12 +678,7 @@ function drawMap(mapGrid, positionHighlighted){
 			r_a = Math.min(Math.sqrt(mapGrid[i].length / highest) , 1); 
 		else
 			r_a = Math.min(mapGrid[i].length / highest, 1);
-		// if(positionHighlighted === i){
-			
-		// } else {
-			ctx.fillStyle = "rgba(255, 0, 0, " + r_a + ")";
-		// }
-		//console.log(i / USAHorizonScale);
+		ctx.fillStyle = "rgba(255, 0, 0, " + r_a + ")";
 		ctx.fillRect( (i % USAHorizonScale) * longInterval,mapCanvas.height - Math.floor(i / USAHorizonScale) * latInterval - latInterval, longInterval, latInterval);
 		if(positionHighlighted === i){
 			ctx.fillStyle = "rgba(0, 0, 255, 255)";
@@ -721,30 +713,30 @@ function getStandardDeviation(collection){
 	total = total / (collection.length - 1);
 	return Math.sqrt(total);
 }
-function getExtremeValues(collection){
-	var stdev = getStandardDeviation(collection);
-	var medMass = getMedianMass(collection, 0, collection.length);
-	var count = 0;
-	var extremeValues = [];
-	for(var i = 0;i < collection.length;i++){
-		if(collection[i][mass] > medMass + stdev || collection[i][mass] < medMass - stdev){
-			extremeValues.push(collection[i]);
-		}
-	}
-	return extremeValues;
-}
-function filterExtremeValues(collection){
-	var stdev = getStandardDeviation(collection);
-	var medMass = getMedianMass(collection, 0, collection.length);
-	var count = 0;
-	var standardValues = [];
-	for(var i = 0;i < collection.length;i++){
-		if(collection[i][mass] < medMass + stdev && collection[i][mass] > medMass - stdev){
-			standardValues.push(collection[i]);
-		}
-	}
-	return standardValues;
-}
+// function getExtremeValues(collection){
+// 	var stdev = getStandardDeviation(collection);
+// 	var medMass = getMedianMass(collection, 0, collection.length);
+// 	var count = 0;
+// 	var extremeValues = [];
+// 	for(var i = 0;i < collection.length;i++){
+// 		if(collection[i][mass] > medMass + stdev || collection[i][mass] < medMass - stdev){
+// 			extremeValues.push(collection[i]);
+// 		}
+// 	}
+// 	return extremeValues;
+// }
+// function filterExtremeValues(collection){
+// 	var stdev = getStandardDeviation(collection);
+// 	var medMass = getMedianMass(collection, 0, collection.length);
+// 	var count = 0;
+// 	var standardValues = [];
+// 	for(var i = 0;i < collection.length;i++){
+// 		if(collection[i][mass] < medMass + stdev && collection[i][mass] > medMass - stdev){
+// 			standardValues.push(collection[i]);
+// 		}
+// 	}
+// 	return standardValues;
+// }
 function updateTableValueDisplay(){
 	var tableMode = parseInt(document.getElementById("tableValueDisplayMod").value);
 	switch(tableMode){
@@ -752,10 +744,10 @@ function updateTableValueDisplay(){
 		tableCreate(tempMapGrid[t_lastClickPosition], "USTable");
 		break;
 		case 1: 
-		tableCreate(filterExtremeValues(tempMapGrid[t_lastClickPosition]), "USTable");
+		tableCreate(filterCollection(tempMapGrid[t_lastClickPosition], filterForStandardValues), "USTable");
 		break;
 		case 2:
-		tableCreate(getExtremeValues(tempMapGrid[t_lastClickPosition]), "USTable");
+		tableCreate(filterCollection(tempMapGrid[t_lastClickPosition], filterForExtremeValues), "USTable");
 		break;
 	}
 }
@@ -960,7 +952,7 @@ function getAverageMassUsingInterquartileValues(collection){
 	return ans;
 }
 function getAverageMassUsingSTDFilter(collection){
-	var normalValues = filterExtremeValues(collection)
+	var normalValues = filterCollection(collection, filterForStandardValues)
 	var ans = getAverageMass(normalValues);
 	var stdev = getStandardDeviation(normalValues);
 	var medMass = getMedianMass(normalValues, 0, normalValues.length);
@@ -971,11 +963,12 @@ function getAverageMassUsingSTDFilter(collection){
 //rankAreasByAverageMassUsing(getAverageMass);
 //rankAreasByAverageMassUsing(getAverageMassUsingInterquartileValues);
 //rankAreasByAverageMassUsing(getAverageMassUsingSTDFilter);
-function convertAreaLabelToReference(areaLabel){
-	if(USAHorizonScale !== 10){
-		return;
-	}
-	var coords = translateRegionLabelToCoords(areaLabel);
-	var index = coords.x + coords.y * USAHorizonScale;
-	return standardReferenceNames[index];
+
+function collapseFilterList(){
+	var list = document.getElementById("filterList");
+	if (list.style.display === "none") {
+        list.style.display = "block";
+    } else {
+        list.style.display = "none";
+    }
 }

@@ -7,6 +7,7 @@
 		<script type="text/javascript" src="js/FileSaver.js"></script>
 		<script type="text/javascript" src="js/constants.js"></script>
 		<script type="text/javascript" src="js/helper.js"></script>
+		<script type="text/javascript" src="js/filters.js"></script>
 		<script type="text/javascript" src="js/distanceCalc.js"></script>
 		<script type="text/javascript" src="js/jquery.tablesorter.min.js"></script>
 	</head>
@@ -49,6 +50,12 @@
 			ChronoPosition:
 			<input type="range" name="chronoPos" value="0" min="0" max="1" id="chronoPosSlider" onInput="updateChronoPos();" style="width:100%">
 			<span id="extraParameters"></span>
+		</div>
+		<div class="container3" id="filterDisplay">
+			<a href="javascript:collapseFilterList()">Collapse Filter List</a>
+			<div id="filterList">
+			This is totally the list its fully of liek stuff.
+			</div>
 		</div>
 		<div class="container3" id="selectedAreaInfo" style="display: none">
 		<h1 class="containerHeader">Selected Area Info</h1></br>

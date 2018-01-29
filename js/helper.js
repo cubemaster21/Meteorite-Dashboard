@@ -230,3 +230,11 @@ function getRegionLabel(x, y){
 	name += y;
 	return name;
 }
+function convertAreaLabelToReference(areaLabel){
+	if(USAHorizonScale !== 10){
+		return;
+	}
+	var coords = translateRegionLabelToCoords(areaLabel);
+	var index = coords.x + coords.y * USAHorizonScale;
+	return standardReferenceNames[index];
+}
