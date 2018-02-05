@@ -24,118 +24,130 @@
 		areas of concern 
 	-->
 		<div class="container3">
-			<canvas id="US-Map"></canvas>
-			Precision(<span id="hpro">10</span>):<input type="range" name="heatmapPrecision" value="10" min="1" max="50" id="heatmapPrecisionSlider" onInput="updateHeatmapParameters();"></br>
-			Grid Radius(<span id="gridRadius"></span>)</br>
-			Sqrt values:<input type="checkbox" id="sqrtCheckbox" onChange="updateHeatmapParameters();" checked></br>
-			Show Danger Ranks:<input type="checkbox" id="drawDangerRanks" onChange="updateHeatmapParameters()"></br>
-			<select id="heatmapDisplayOptions" onChange="updateHeatmapParameters();">
-				<option value="-1">Quantity</option>
-				<option value="0">Mass &lt 0.5kg</option>
-				<option value="1">Mass 0.5kg - 1kg</option>
-				<option value="2">Mass 1kg - 5kg</option>
-				<option value="3">Mass 5kg - 10kg</option>
-				<option value="4">Mass 10kg - 50kg</option>
-				<option value="5">Mass 50kg - 100kg</option>
-				<option value="6">Mass 100kg - 500kg</option>
-				<option value="7">Mass 500kg - 1000kg</option>
-				<option value="8">Mass &gt 1000kg</option>
+			<h1 class="containerHeader">Map Graphic</h1>
+			<a href="javascript:collapseMapContent()" style="float: right;" id="mapContentCollapser">[Collapse]</a></br>
+			<div id="mapContent">
+				<canvas id="US-Map"></canvas>
+				Precision(<span id="hpro">10</span>):<input type="range" name="heatmapPrecision" value="10" min="1" max="50" id="heatmapPrecisionSlider" onInput="updateHeatmapParameters();"></br>
+				Grid Radius(<span id="gridRadius"></span>)</br>
+				Sqrt values:<input type="checkbox" id="sqrtCheckbox" onChange="updateHeatmapParameters();" checked></br>
+				Show Danger Ranks:<input type="checkbox" id="drawDangerRanks" onChange="updateHeatmapParameters()"></br>
+				<select id="heatmapDisplayOptions" onChange="updateHeatmapParameters();">
+					<option value="-1">Quantity</option>
+					<option value="0">Mass &lt 0.5kg</option>
+					<option value="1">Mass 0.5kg - 1kg</option>
+					<option value="2">Mass 1kg - 5kg</option>
+					<option value="3">Mass 5kg - 10kg</option>
+					<option value="4">Mass 10kg - 50kg</option>
+					<option value="5">Mass 50kg - 100kg</option>
+					<option value="6">Mass 100kg - 500kg</option>
+					<option value="7">Mass 500kg - 1000kg</option>
+					<option value="8">Mass &gt 1000kg</option>
 
-			</select></br></br>
-			<hr></br>
-			<button type="button" onclick="doChronoAnimation();">Play Chrono from Position</button>
-			<button type="button" onclick="pauseChronoAnimation();">Pause</button></br>
-			ChronoSpeed(<span id="csPrec">100</span>ms):
-			<input type="range" name="chronoSpeed" value="100" min="50" max="1000" id="chronoSpeedSlider" onInput="updateChronoSpeed();"></br>
-			ChronoPosition:
-			<input type="range" name="chronoPos" value="0" min="0" max="1" id="chronoPosSlider" onInput="updateChronoPos();" style="width:100%">
-			<span id="extraParameters"></span>
+				</select></br></br>
+				<hr></br>
+				<button type="button" onclick="doChronoAnimation();">Play Chrono from Position</button>
+				<button type="button" onclick="pauseChronoAnimation();">Pause</button></br>
+				ChronoSpeed(<span id="csPrec">100</span>ms):
+				<input type="range" name="chronoSpeed" value="100" min="50" max="1000" id="chronoSpeedSlider" onInput="updateChronoSpeed();"></br>
+				ChronoPosition:
+				<input type="range" name="chronoPos" value="0" min="0" max="1" id="chronoPosSlider" onInput="updateChronoPos();" style="width:100%">
+				<span id="extraParameters"></span>
+			</div>
 		</div>
 		<div class="container3" id="filterDisplay">
-			<a href="javascript:collapseFilterList()">Collapse Filter List</a>
+			<h1 class="containerHeader">Data Filters</h1>
+			<a href="javascript:collapseFilterList()" style="float: right;" id="filterCollapser">[Collapse]</a></br>
 			<div id="filterList">
-			This is totally the list its fully of liek stuff.
+				<span style="float: right;">Add Filter:<select id="filterCreator" onChange="createNewFilter()">
+					<option value="-1">None</option>
+					<option value="0">Coordinates</option>
+					<option value="1">Mass</option>
+					<option value="2">Date</option>
+					<option value="3">Extreme Mass Values Only</option>
+					<option value="4">Standard Mass Values Only</option>
+					<option value="5">Interquartile Mass Values Only</option>
+					<option value="6">Extraquartile Mass Values Only</option>
+				</select></span></br>
+				<div id="activeFilters">
+				</div>
+				</br><button style="width: 100%;" type="button" onClick="applyActiveFilters();">Apply Filters</button></span>
 			</div>
+
 		</div>
 		<div class="container3" id="selectedAreaInfo" style="display: none">
 		<h1 class="containerHeader">Selected Area Info</h1></br>
 			<span class="containerDivider">
 				<table>
 					<tr>
-						<td>Subset Label</td>
-						<td><div id="SubsetLabel" class="property"></div></td>
+						<th></th>
+						<th><div id="SubsetLabel" class="property"></div></th>
+						<th>USA</t>
 					</tr>
 					<tr>
-						<td>Oldest Meteorite in Subset</td>
+						<td>Entries</td>
+						<td><div id="SubsetEntries" class="property"></div></td>
+						<td><div id="USEntries" class="property"></div></td>
+					</tr>
+					<tr>
+						<td>Oldest Meteorite</td>
 						<td><div id="SubsetOldest" class="property"></div></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>Latest Meteorite in Subset</td>
+						<td>Latest Meteorite</td>
 						<td><div id="SubsetNewest" class="property"></div></td>
+						<td></td>
 					</tr>
 					<tr>
 						<td>Interquartile Range of Mass</td>
 						<td><div id="SubsetIQR" class="property"></div></td>
+						<td></td>
 					</tr>
 					<tr>
-						<td>Average Mass of Subset</td>
+						<td>Average Mass</td>
 						<td><div id="SubsetAverageMass" class="property"></div></td>
-					</tr>
-					<tr>
-						<td>Average Mass in US</td>
 						<td><div id="USAverageMass" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Mass Range Expectation</td>
 						<td><div id="SubsetMassRangeExpectation" class="property"></div></td>
-					</tr>
-					<tr>
-						<td>Mass Range Expectation for US</td>
 						<td><div id="USMassRangeExpectation" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Standard Deviation of Mass</td>
 						<td><div id="SubsetStandardDeviation" class="property"></div></td>
-					</tr>
-					<tr>
-						<td>Standard Deviation of Mass for US</td>
 						<td><div id="USStandardDeviation" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Mean Meteorites per Year <span id="yearRange1"></span></td>
 						<td><div id="SubsetMeteoritesPerYear" class="property"></div></td>
-					</tr>
-					<tr>
-						<td>Mean Meteorites per Year for US <span id="yearRange2"></span></td>
 						<td><div id="USMeteoritesPerYear" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Mean Meteorites per Year percentile</td>
 						<td><div id="SubsetAmpyPercentile" class="property"></div></td>
-					</tr>
-					<tr>
-						<td>Entries in Subset</td>
-						<td><div id="SubsetEntries" class="property"></div></td>
-					</tr>
-					<tr>
-						<td>Entries in US</td>
-						<td><div id="USEntries" class="property"></div></td>
+						<td>N/A</td>
 					</tr>
 					<tr>
 						<td>Next predicted meteorite report</td>
 						<td><div id="SubsetPredictedTime" class="property"></div></td>
+						<td></td>
 					</tr>
 					<tr>
 						<td>Chance of Meteorite in the next year</td>
 						<td><div id="SubsetChanceNextYear" class="property"></div></td>
+						<td></td>
 					</tr>
 					<tr>
 						<td>Chance of Meteorite in the next 5 years</td>
 						<td><div id="SubsetChanceNext5Years" class="property"></div></td>
+						<td></td>
 					</tr>
 					<tr>
 						<td>Dangerousness Rank</td>
 						<td><div id="SubsetDangerRank" class="property"></div></td>
+						<td>N/A</td>
 					</tr>
 				</table>
 				</br>
@@ -149,7 +161,8 @@
 				</select></br>
 			</span><span class="containerDivider">
 				<button type="button" onClick="exportData();">Export</button>
-				<canvas id="massDistributionChart" class="barChart"></canvas></br>
+				<canvas id="massDistributionChartSubset" class="barChart"></canvas></br>
+				<canvas id="massDistributionChartUSA" class="barChart"></canvas></br>
 				<select id="distributionMode" onChange="updateMassDistributionGraph(null, null);">
 					<option value="1">Frequency</option>
 					<option value="2">Percentage</option>
@@ -173,9 +186,12 @@
 		</div>
 		<div class="container3">
 			<h1 class="containerHeader">Danger Rankings</h1>
-			<h3>What are danger rankings?</h3>
-			<div id="rankingDescription">Our danger ranking system is created by calculating the probability that a meteorite will fall in a given area within the next year.</div>
-			<div id="rankingsList"></div>
+			<a href="javascript:collapseDangerRankings()" style="float: right;" id="dangerRankingsCollapser">[Collapse]</a></br>
+			<div id="dangerRankingsContent">
+				<h3>What are danger rankings?</h3>
+				<div id="rankingDescription">Our danger ranking system is created by calculating the probability that a meteorite will fall in a given area within the next year.</div>
+				<div id="rankingsList"></div>
+			</div>
 		</div>
 	</body>
 </html>

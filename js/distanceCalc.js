@@ -380,8 +380,8 @@ function processClick(event){
 	update("SubsetChanceNext5Years", getChanceOfNextInXYears(tempMapGrid[finalPos], 5.0).toFixed(4));
 	update("SubsetDangerRank", findRankOfDangerousnessOfArea(finalPos) + getOrdinalEnding(findRankOfDangerousnessOfArea(finalPos)) + " out of " + (USAHorizonScale * USAVerticalScale));
 	document.getElementById("selectedAreaInfo").style.display = "block";
-	updateMassDistributionGraph(document.getElementById("distributionMode").value, tempMapGrid[finalPos]);
-
+	updateMassDistributionGraph(document.getElementById("distributionMode").value, tempMapGrid[finalPos], "massDistributionChartSubset", getRegionLabel(xCoord, yCoord));
+	updateMassDistributionGraph(document.getElementById("distributionMode").value, getAmericanMeteorites(), "massDistributionChartUSA", "USA");
 	createMultiLineMassChart(tempMapGrid[finalPos]);
 	
 	highlightDangerRankInListing(getRegionLabel(xCoord, yCoord));
@@ -537,8 +537,8 @@ function testExpectations(collection){
 	console.log("MassGroup expectation: " + expectation);
 	return massGroupings[expectation].length
 }
-
-function updateMassDistributionGraph(displayMode, subcollection){
+var mdgIDmap = new Map();
+function updateMassDistributionGraph(displayMode, subcollection, graphID, titleAddend){
 	//Compile labels 
 	if(displayMode === null)
 		displayMode = document.getElementById("distributionMode").value;
@@ -566,16 +566,16 @@ function updateMassDistributionGraph(displayMode, subcollection){
 			data[i] = data[i] / subcollection.length;
 		}
 	}
-	if(massDistributionChartExists)
-		massDistributionChart.destroy();
-	var ctx = document.getElementById("massDistributionChart").getContext("2d");
+	if(mdgIDmap.has(graphID))
+		mdgIDmap.get(graphID).destroy();
+	var ctx = document.getElementById(graphID).getContext("2d");
 
 	massDistributionChart = new Chart(ctx, {
 		type: 'bar',
 		data: {
 			labels: labels,
 			datasets: [{
-				label: 'Mass Grouping Distribution',
+				label: ('Mass Grouping Distribution (' + titleAddend + ')'),
 				backgroundColor: '#dd6f25',
 				data: data,
 			}]
@@ -583,7 +583,7 @@ function updateMassDistributionGraph(displayMode, subcollection){
 		scaleFontColor: '#dddddd',
 		scaleColor: '#dddddd'
 	})
-	massDistributionChartExists = true;
+	mdgIDmap.set(graphID, massDistributionChart);
 }
 function doChronoAnimation(){
 	var collection = getAmericanMeteorites();
@@ -966,9 +966,37 @@ function getAverageMassUsingSTDFilter(collection){
 
 function collapseFilterList(){
 	var list = document.getElementById("filterList");
+	var collapser = document.getElementById("filterCollapser");
 	if (list.style.display === "none") {
+		//expand
         list.style.display = "block";
+        collapser.innerHTML = "[Collapse]";
     } else {
         list.style.display = "none";
+        collapser.innerHTML = "[Expand]";
+    }
+}
+function collapseDangerRankings(){
+	var list = document.getElementById("dangerRankingsContent");
+	var collapser = document.getElementById("dangerRankingsCollapser");
+	if (list.style.display === "none") {
+		//expand
+        list.style.display = "block";
+        collapser.innerHTML = "[Collapse]";
+    } else {
+        list.style.display = "none";
+        collapser.innerHTML = "[Expand]";
+    }
+}
+function collapseMapContent(){
+	var list = document.getElementById("mapContent");
+	var collapser = document.getElementById("mapContentCollapser");
+	if (list.style.display === "none") {
+		//expand
+        list.style.display = "block";
+        collapser.innerHTML = "[Collapse]";
+    } else {
+        list.style.display = "none";
+        collapser.innerHTML = "[Expand]";
     }
 }
