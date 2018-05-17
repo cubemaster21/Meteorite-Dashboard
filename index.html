@@ -4,6 +4,8 @@
 		<link rel="stylesheet" href="MET-style.css">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
 		<script type="text/javascript" src="js/Chart.js"></script>
+		<script type="text/javascript" src="js/statistics-distributions.js"></script>
+		<script type="text/javascript" src="js/anova.js"></script>
 		<script type="text/javascript" src="js/FileSaver.js"></script>
 		<script type="text/javascript" src="js/constants.js"></script>
 		<script type="text/javascript" src="js/helper.js"></script>
@@ -76,7 +78,9 @@
 
 		</div>
 		<div class="container3" id="selectedAreaInfo" style="display: none">
-		<h1 class="containerHeader">Selected Area Info</h1></br>
+		<h1 class="containerHeader">Selected Area Info</h1>
+		<a href="javascript:collapseSelectedAreaInfo()" style="float: right;" id="selectedAreaCollapser">[Collapse]</a></br>
+		<div id="selectedAreaContainer">
 			<span class="containerDivider">
 				<table>
 					<tr>
@@ -92,17 +96,17 @@
 					<tr>
 						<td>Oldest Meteorite</td>
 						<td><div id="SubsetOldest" class="property"></div></td>
-						<td></td>
+						<td><div id="USAOldest" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Latest Meteorite</td>
 						<td><div id="SubsetNewest" class="property"></div></td>
-						<td></td>
+						<td><div id="USANewest" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Interquartile Range of Mass</td>
 						<td><div id="SubsetIQR" class="property"></div></td>
-						<td></td>
+						<td><div id="USAIQR" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Average Mass</td>
@@ -132,17 +136,17 @@
 					<tr>
 						<td>Next predicted meteorite report</td>
 						<td><div id="SubsetPredictedTime" class="property"></div></td>
-						<td></td>
+						<td><div id="USAPredictedTime" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Chance of Meteorite in the next year</td>
 						<td><div id="SubsetChanceNextYear" class="property"></div></td>
-						<td></td>
+						<td><div id="USAChanceNextYear" class="property"></td>
 					</tr>
 					<tr>
 						<td>Chance of Meteorite in the next 5 years</td>
 						<td><div id="SubsetChanceNext5Years" class="property"></div></td>
-						<td></td>
+						<td><div id="USAChanceNext5Years" class="property"></div></td>
 					</tr>
 					<tr>
 						<td>Dangerousness Rank</td>
@@ -170,19 +174,23 @@
 			</span>
 			<div id="USTable"></div>
 		</div>
+		</div>
 		<div class="container4" id="massCategoryLineChart" style="display: none">
-			<h1 class="containerHeader">Mass Category count over the years, starting in 1900</h1></br>
-			<input type="checkbox" id="lineChartCheckbox0" checked onChange="refreshMassGroupLineChart();"><span id="lcc0">&lt 0.5kg</span>
-			<input type="checkbox" id="lineChartCheckbox1" checked onChange="refreshMassGroupLineChart();"><span id="lcc1">0.5kg - 1kg</span>
-			<input type="checkbox" id="lineChartCheckbox2" checked onChange="refreshMassGroupLineChart();"><span id="lcc2">1kg - 5kg</span>
-			<input type="checkbox" id="lineChartCheckbox3" checked onChange="refreshMassGroupLineChart();"><span id="lcc3">5kg - 10kg</span>
-			<input type="checkbox" id="lineChartCheckbox4" checked onChange="refreshMassGroupLineChart();"><span id="lcc4">10kg - 50kg</span>
-			<input type="checkbox" id="lineChartCheckbox5" checked onChange="refreshMassGroupLineChart();"><span id="lcc5">50kg - 100kg</span>
-			<input type="checkbox" id="lineChartCheckbox6" checked onChange="refreshMassGroupLineChart();"><span id="lcc6">100kg - 500kg</span>
-			<input type="checkbox" id="lineChartCheckbox7" checked onChange="refreshMassGroupLineChart();"><span id="lcc7">500kg - 1000kg</span>
-			<input type="checkbox" id="lineChartCheckbox8" checked onChange="refreshMassGroupLineChart();"><span id="lcc8">&gt 1000kg</span>
-			<span style="float: right;"><input type="checkbox" id="lineChartCumulative" unchecked onChange="refreshMassGroupLineChart();">Cumulative</span>
-			<canvas id="massGroupLineChart"></canvas>
+			<h1 class="containerHeader">Mass Category count over the years, starting in 1900</h1>
+			<a href="javascript:collapseMassCatLineChart()" style="float: right;" id="massCatLineChartCollapser">[Collapse]</a></br>
+			<div id="massCatLineChartContainer">
+				<input type="checkbox" id="lineChartCheckbox0" checked onChange="refreshMassGroupLineChart();"><span id="lcc0">&lt 0.5kg</span>
+				<input type="checkbox" id="lineChartCheckbox1" checked onChange="refreshMassGroupLineChart();"><span id="lcc1">0.5kg - 1kg</span>
+				<input type="checkbox" id="lineChartCheckbox2" checked onChange="refreshMassGroupLineChart();"><span id="lcc2">1kg - 5kg</span>
+				<input type="checkbox" id="lineChartCheckbox3" checked onChange="refreshMassGroupLineChart();"><span id="lcc3">5kg - 10kg</span>
+				<input type="checkbox" id="lineChartCheckbox4" checked onChange="refreshMassGroupLineChart();"><span id="lcc4">10kg - 50kg</span>
+				<input type="checkbox" id="lineChartCheckbox5" checked onChange="refreshMassGroupLineChart();"><span id="lcc5">50kg - 100kg</span>
+				<input type="checkbox" id="lineChartCheckbox6" checked onChange="refreshMassGroupLineChart();"><span id="lcc6">100kg - 500kg</span>
+				<input type="checkbox" id="lineChartCheckbox7" checked onChange="refreshMassGroupLineChart();"><span id="lcc7">500kg - 1000kg</span>
+				<input type="checkbox" id="lineChartCheckbox8" checked onChange="refreshMassGroupLineChart();"><span id="lcc8">&gt 1000kg</span>
+				<span style="float: right;"><input type="checkbox" id="lineChartCumulative" unchecked onChange="refreshMassGroupLineChart();">Cumulative</span>
+				<canvas id="massGroupLineChart"></canvas>
+			</div>
 		</div>
 		<div class="container3">
 			<h1 class="containerHeader">Danger Rankings</h1>

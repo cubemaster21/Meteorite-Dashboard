@@ -178,9 +178,32 @@ function checkAmericanGrid(){
 	//like so, ([0,0],[0,1],[1,0],[1,1])
 	for(var y = 0;y < USAVerticalScale;y++){
 		for(var x = 0;x < USAHorizonScale;x++){
-			var latg1 = USALowerLat + (y + 0.5) * ((USAUpperLat - USALowerLat) / USAVerticalScale);
-			var long1 = USALowerLong + (x + 0.5) * ((USAUpperLong - USALowerLong) / USAHorizonScale);
-			getEntriesInRegion(latg1,long1,USAGridRadius, americanMeteorites);
+			
+
+			//var latg1 = USALowerLat + (y + 0.5) * ((USAUpperLat - USALowerLat) / USAVerticalScale);
+			//var long1 = USALowerLong + (x + 0.5) * ((USAUpperLong - USALowerLong) / USAHorizonScale);
+			//	getEntriesInRegion(latg1,long1,USAGridRadius, americanMeteorites);
+
+
+			//new mutual exclusion version
+			var horizonInterval = (USAUpperLong - USALowerLong) / USAHorizonScale;
+			var verticalInterval = (USAUpperLat - USALowerLat) / USAVerticalScale;
+			var lata1 = USALowerLat + y * verticalInterval;
+			var longa1 = USALowerLong + x * horizonInterval;
+			filterCoordinates.minLat = lata1;
+			filterCoordinates.maxLat = lata1 + verticalInterval;
+			filterCoordinates.minLong = longa1;
+			filterCoordinates.maxLong = longa1 + horizonInterval;
+			subCollection = []; // clear the old list
+			for(var c = 0;c < americanMeteorites.length;c++){
+				if(filterCoordinates.run(americanMeteorites[c])){
+					subCollection.push(americanMeteorites[c]);
+				}
+			}
+
+
+
+
 			gridSections.push(subCollection);
 			
 
@@ -359,7 +382,7 @@ function processClick(event){
 	}
 
 	var nextPredictedForArea =parseFloat(getNewestMeteorite(tempMapGrid[finalPos])[year].getFullYear()) + parseFloat((1 / getAverageMeteoritesPerYear(tempMapGrid[finalPos])).toFixed(0));
-
+	var nextPredictedForUSA = parseFloat(getNewestMeteorite(getAmericanMeteorites())[year].getFullYear()) + parseFloat((1 / getAverageMeteoritesPerYear(getAmericanMeteorites())).toFixed(0));
 	update("SubsetLabel", getRegionLabel(xCoord, yCoord) + " (" + convertAreaLabelToReference(getRegionLabel(xCoord, yCoord)) + ")");
 	update("SubsetNewest", getNewestMeteorite(tempMapGrid[finalPos])[name] + " (" + getNewestMeteorite(tempMapGrid[finalPos])[year].getFullYear() + ")");
 	update("SubsetOldest", getOldestMeteorite(tempMapGrid[finalPos])[name] + " (" + getOldestMeteorite(tempMapGrid[finalPos])[year].getFullYear() + ")");
@@ -379,6 +402,13 @@ function processClick(event){
 	update("SubsetChanceNextYear", getChanceOfNextInXYears(tempMapGrid[finalPos], 1.0).toFixed(4));
 	update("SubsetChanceNext5Years", getChanceOfNextInXYears(tempMapGrid[finalPos], 5.0).toFixed(4));
 	update("SubsetDangerRank", findRankOfDangerousnessOfArea(finalPos) + getOrdinalEnding(findRankOfDangerousnessOfArea(finalPos)) + " out of " + (USAHorizonScale * USAVerticalScale));
+	
+	update("USAOldest", getOldestMeteorite(getAmericanMeteorites())[name] + "(" + getOldestMeteorite(getAmericanMeteorites())[year].getFullYear() + ")");
+	update("USANewest", getNewestMeteorite(getAmericanMeteorites())[name] + "(" + getNewestMeteorite(getAmericanMeteorites())[year].getFullYear() + ")");
+	update("USAIQR", getInterquartileRange(getAmericanMeteorites()).lower + "g to " + getInterquartileRange(getAmericanMeteorites()).upper + "g");
+	update("USAPredictedTime", nextPredictedForUSA);
+	update("USAChanceNextYear", getChanceOfNextInXYears(getAmericanMeteorites(), 1.0).toFixed(4));
+	update("USAChanceNext5Years", getChanceOfNextInXYears(getAmericanMeteorites(), 5.0).toFixed(4));
 	document.getElementById("selectedAreaInfo").style.display = "block";
 	updateMassDistributionGraph(document.getElementById("distributionMode").value, tempMapGrid[finalPos], "massDistributionChartSubset", getRegionLabel(xCoord, yCoord));
 	updateMassDistributionGraph(document.getElementById("distributionMode").value, getAmericanMeteorites(), "massDistributionChartUSA", "USA");
@@ -693,6 +723,11 @@ function drawMap(mapGrid, positionHighlighted){
 		}
 	}
 
+
+	//test draw for scales
+
+
+
 	return ctx;
 }
 function drawGeoMap(){
@@ -991,6 +1026,30 @@ function collapseDangerRankings(){
 function collapseMapContent(){
 	var list = document.getElementById("mapContent");
 	var collapser = document.getElementById("mapContentCollapser");
+	if (list.style.display === "none") {
+		//expand
+        list.style.display = "block";
+        collapser.innerHTML = "[Collapse]";
+    } else {
+        list.style.display = "none";
+        collapser.innerHTML = "[Expand]";
+    }
+}
+function collapseSelectedAreaInfo(){
+	var list = document.getElementById("selectedAreaContainer");
+	var collapser = document.getElementById("selectedAreaCollapser");
+	if (list.style.display === "none") {
+		//expand
+        list.style.display = "block";
+        collapser.innerHTML = "[Collapse]";
+    } else {
+        list.style.display = "none";
+        collapser.innerHTML = "[Expand]";
+    }
+}
+function collapseMassCatLineChart(){
+	var list = document.getElementById("massCatLineChartContainer");
+	var collapser = document.getElementById("massCatLineChartCollapser");
 	if (list.style.display === "none") {
 		//expand
         list.style.display = "block";

@@ -82,7 +82,7 @@ filterCoordinates.maxLat = 0;
 filterCoordinates.minLong = 0;
 filterCoordinates.maxLong = 0;
 filterCoordinates.run = function(entry){
-	return entry[reclat] <= maxLat && entry[reclat] >= minLat && entry[reclong] <= maxLong && entry[reclong] >= minLong; 
+	return entry[reclat] <= this.maxLat && entry[reclat] >= this.minLat && entry[reclong] <= this.maxLong && entry[reclong] >= this.minLong; 
 };
 
 
@@ -92,7 +92,7 @@ filterByMass.content="Min Mass: <input type=\"text\" name=\"minMass\"> Max Mass:
 filterByMass.minMass = 0;
 filterByMass.maxMass = 0;
 filterByMass.run = function(entry){
-	return entry[mass] <= maxMass && entry[mass] >= minMass;
+	return entry[mass] <= this.maxMass && entry[mass] >= this.minMass;
 };
 
 var filterByDate = new Filter();
@@ -101,7 +101,7 @@ filterByDate.content = "Min Date: <input type=\"date\" name=\"minDate\">  Max Da
 filterByDate.minDate = 0;
 filterByDate.maxDate = 0;
 filterByDate.run = function(entry){
-	return entry[year] <= maxDate && entry[year] >= minDate;
+	return entry[year] <= this.maxDate && entry[year] >= this.minDate;
 };
 
 var filterForExtremeValues = new Filter();
