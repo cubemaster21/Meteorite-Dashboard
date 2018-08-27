@@ -80,6 +80,7 @@ function LoadFile() {
 		drawMap(checkAmericanGrid());
 		initListeners();
 		document.getElementById("chronoPosSlider").max = getAmericanMeteorites().length - 1;
+		exportCollectionToCSV(getAmericanMeteorites());
 	});
 }
 /*
@@ -452,6 +453,70 @@ function exportData(){
 	var filename = prompt("Export to file: ", "")
 	var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
 	saveAs(blob, filename + ".txt");
+	exportCollectionToCSV(tempMapGrid[t_lastClickPosition]);
+}
+function exportCollectionToCSV(collection){
+	var text = "";
+	var fallArray = [];
+	var classArray = [];
+
+
+	for(var i = 0;i < collection.length;i++){
+		var temp = "";
+		for(var j = 0;j < collection[i].length;j++){
+			switch(j){
+				case year:
+					temp += collection[i][j].getFullYear() + (j === collection[i].length ? "" : ",");
+				break;
+				case fall:
+
+					var val = collection[i][j];
+					var outputVal = "-";
+					do{
+						for(var k = 0;k < fallArray.length;k++){
+							if(val === fallArray[k]){
+								outputVal = k;
+								break;
+							}
+						}
+						if(outputVal === "-"){
+							fallArray.push(val);						}
+					}while(outputVal === "-")
+					outputVal++
+					temp += outputVal + (j === collection[i].length ? "" : ",");
+
+				break;
+				case recclass:
+					var val = collection[i][j];
+					var outputVal = "-";
+					do{
+						for(var k = 0;k < classArray.length;k++){
+							if(val === classArray[k]){
+								outputVal = k;
+								break;
+							}
+						}
+						if(outputVal === "-"){
+							classArray.push(val);
+						}
+					}while(outputVal === "-")
+					outputVal++
+					temp += outputVal + (j === collection[i].length ? "" : ",");
+				break;
+				default: 
+					temp += collection[i][j].toString().replace(",", "|") + (j === collection[i].length ? "" : ",");
+			}
+		}
+		text += temp + "\r\n";
+	}
+
+	for(var m = 0;m < fallArray.length;m++)
+		console.log((m + 1) + ": " + fallArray[m]);
+	for(var m = 0;m < classArray.length;m++)
+		console.log((m + 1) + ": " + classArray[m]);
+
+	var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+	saveAs(blob, "collection.csv");
 }
 function update(div, value){
 	document.getElementById(div).innerHTML = value;
