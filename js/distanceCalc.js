@@ -796,9 +796,21 @@ function drawMap(mapGrid, positionHighlighted){
 	return ctx;
 }
 function drawGeoMap(){
+
+	//get aspect ratio of map image first
+
+	var ratio = map.height / map.width;
+
+
 	var mapCanvas = document.getElementById("US-Map");
+	//modify its height to fix stretching issues
+	var fetchedWidth = getComputedStyle(mapCanvas.parentNode).width; 
+	mapCanvas.width = fetchedWidth.substring(0, fetchedWidth.length - 2);
+	console.log(getComputedStyle(mapCanvas.parentNode));
+	mapCanvas.height = ratio * mapCanvas.width;
+
 	var ctx = mapCanvas.getContext("2d");
-	ctx.fillStyle = "#FFFFFF";
+	ctx.fillStyle = "#555555";
 	ctx.fillRect(0, 0, mapCanvas.width, mapCanvas.height);
 	ctx.drawImage(map, 0, 0, mapCanvas.width, mapCanvas.height);
 	return mapCanvas;

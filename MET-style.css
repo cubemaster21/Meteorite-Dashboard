@@ -30,8 +30,8 @@ table.sortable thead {
 	left: 30px;
 }
 #US-Map {
-	width: 100%;
-	height: 500px;
+	/*width: 100%;
+	height: 500px;*/
 }
 #latDistGraph {
 	width: 100%;
