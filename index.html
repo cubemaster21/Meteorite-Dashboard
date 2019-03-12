@@ -30,7 +30,7 @@
 			<a href="javascript:collapseMapContent()" style="float: right;" id="mapContentCollapser">[Collapse]</a></br>
 			<div id="mapContent">
 				<canvas id="US-Map"></canvas>
-				Precision(<span id="hpro">10</span>):<input type="range" name="heatmapPrecision" value="10" min="1" max="100" id="heatmapPrecisionSlider" onInput="updateHeatmapParameters();"></br>
+				Precision(<span id="hpro">10</span>):<input type="range" name="heatmapPrecision" value="10" min="1" max="100" id="heatmapPrecisionSlider" onInput="updateHeatmapParameters();">MAX PRECISION<input type="checkbox" id="heatmapMaxPrecision" onChange="updateHeatmapParameters();"></br>
 				Grid Radius(<span id="gridRadius"></span>)</br>
 				Sqrt values:<input type="checkbox" id="sqrtCheckbox" onChange="updateHeatmapParameters();" checked></br>
 				Show Danger Ranks:<input type="checkbox" id="drawDangerRanks" onChange="updateHeatmapParameters()"></br>

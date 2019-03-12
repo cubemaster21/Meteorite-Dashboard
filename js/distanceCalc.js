@@ -509,14 +509,14 @@ function exportCollectionToCSV(collection){
 		}
 		text += temp + "\r\n";
 	}
-
+/*
 	for(var m = 0;m < fallArray.length;m++)
 		console.log((m + 1) + ": " + fallArray[m]);
 	for(var m = 0;m < classArray.length;m++)
 		console.log((m + 1) + ": " + classArray[m]);
-
+*/
 	var blob = new Blob([text], {type: "text/plain;charset=utf-8"});
-	saveAs(blob, "collection.csv");
+	//saveAs(blob, "collection.csv");
 }
 function update(div, value){
 	document.getElementById(div).innerHTML = value;
@@ -525,36 +525,61 @@ function getPair(div){
 	return div + ": " + document.getElementById(div).innerHTML + "\r\n";
 }
 function updateHeatmapParameters(){
-	sqrtValuesOnMap = document.getElementById("sqrtCheckbox").checked;
-	drawRanks = document.getElementById("drawDangerRanks").checked;
-	USAHorizonScale = Math.floor(document.getElementById("heatmapPrecisionSlider").value);
-	var displayMode = parseInt(document.getElementById("heatmapDisplayOptions").value);
-	document.getElementById("hpro").innerHTML = USAHorizonScale;
-	USAVerticalScale = Math.ceil(USAHorizonScale / 2);
-	USAGridRadius = findDistance(0.0, 0.0, ((USAUpperLat - USALowerLat) / USAVerticalScale) * 0.5, ((USAUpperLong - USALowerLong) / USAHorizonScale) * 0.5);
-	document.getElementById("gridRadius").innerHTML = USAGridRadius + " mi";
 
-	var mapGrid = checkAmericanGrid();
-	tempMapGrid = mapGrid;
-	if(displayMode > -1){
-		var massMapGrid = [];
-		for(var i = 0;i < mapGrid.length;i++){
-			var t = [];
-			massMapGrid.push(t);
-			for(var k = 0;k < mapGrid[i].length;k++){
-				if(getMassGroup(mapGrid[i][k]) === displayMode){
-					massMapGrid[i].push(mapGrid[i][k]);
+	var maxPrecision = document.getElementById("heatmapMaxPrecision").checked;
+	if(maxPrecision){
+		//WORKING HERE
+
+		var americanMeteorites = getAmericanMeteorites();
+		//redraw map
+		var mapCanvas = drawGeoMap();
+		var ctx = mapCanvas.getContext("2d");
+		ctx.fillStyle = "rgba(255, 0, 0, 1)";
+		var rectSize = 4;
+		for(var i = 0; i < americanMeteorites.length;i++){
+			var normalX = (americanMeteorites[i][reclat] - USALowerLat) / (USAUpperLat - USALowerLat) * mapCanvas.width;
+			var normalY = (americanMeteorites[i][reclong] - USALowerLong) / (USAUpperLong - USALowerLong) * mapCanvas.height;
+
+			ctx.fillRect(normalX - rectSize / 2, mapCanvas.height - /* <- This is to flip the y axis*/normalY - rectSize / 2, rectSize, rectSize);
+		}
+
+		ctx.fillRect(0, 0, 10, 10);
+
+
+	} else {
+
+
+		sqrtValuesOnMap = document.getElementById("sqrtCheckbox").checked;
+		drawRanks = document.getElementById("drawDangerRanks").checked;
+		USAHorizonScale = Math.floor(document.getElementById("heatmapPrecisionSlider").value);
+		var displayMode = parseInt(document.getElementById("heatmapDisplayOptions").value);
+		document.getElementById("hpro").innerHTML = USAHorizonScale;
+		USAVerticalScale = Math.ceil(USAHorizonScale / 2);
+		USAGridRadius = findDistance(0.0, 0.0, ((USAUpperLat - USALowerLat) / USAVerticalScale) * 0.5, ((USAUpperLong - USALowerLong) / USAHorizonScale) * 0.5);
+		document.getElementById("gridRadius").innerHTML = USAGridRadius + " mi";
+
+		var mapGrid = checkAmericanGrid();
+		tempMapGrid = mapGrid;
+		if(displayMode > -1){
+			var massMapGrid = [];
+			for(var i = 0;i < mapGrid.length;i++){
+				var t = [];
+				massMapGrid.push(t);
+				for(var k = 0;k < mapGrid[i].length;k++){
+					if(getMassGroup(mapGrid[i][k]) === displayMode){
+						massMapGrid[i].push(mapGrid[i][k]);
+					}
 				}
 			}
+			mapGrid = massMapGrid;
 		}
-		mapGrid = massMapGrid;
+		drawMap(mapGrid, t_lastClickPosition);
+		subCollection = getAmericanMeteorites();
+		postDangerRankings();
+		// getInterquartileRange(subCollection);
+		
+		// console.log(getLatitudeValueDistribution("count", latDist));
 	}
-	drawMap(mapGrid, t_lastClickPosition);
-	subCollection = getAmericanMeteorites();
-	postDangerRankings();
-	// getInterquartileRange(subCollection);
-	
-	// console.log(getLatitudeValueDistribution("count", latDist));
 }
 function updateLatDistGraph(){
 	var sliderValue = Math.floor(document.getElementById("latDistSlider").value);
@@ -700,7 +725,7 @@ function chronoSubFunction(collection, maxIndex, continueLoop){
 			gridSections.push([]);
 		}
 		for(var i = 0;i < maxIndex;i++){
-			console.log(getGridPosition(collection[i]));
+			//console.log(getGridPosition(collection[i]));
 			if(getMassGroup(collection[i]) === displayMode || displayMode === -1)
 				gridSections[getGridPosition(collection[i])].push(collection[i]);
 		}
@@ -806,7 +831,7 @@ function drawGeoMap(){
 	//modify its height to fix stretching issues
 	var fetchedWidth = getComputedStyle(mapCanvas.parentNode).width; 
 	mapCanvas.width = fetchedWidth.substring(0, fetchedWidth.length - 2);
-	console.log(getComputedStyle(mapCanvas.parentNode));
+	//console.log(getComputedStyle(mapCanvas.parentNode));
 	mapCanvas.height = ratio * mapCanvas.width;
 
 	var ctx = mapCanvas.getContext("2d");
@@ -931,7 +956,7 @@ function createMultiLineMassChart(collection){
 		var dataset = lineChartData.datasets[i];
 		dataset.backgroundColor = "RGBA(0,0,0,0)";
 		dataset.borderColor =  !document.getElementById("lineChartCheckbox" + i).checked ? "RGBA(1,1,1,0)" : getIndexColor(i);
-		console.log(dataset.strokeColor);
+		//console.log(dataset.strokeColor);
 		document.getElementById("lcc" + i).style.color = getIndexColor(i);
 		dataset.data = [];
 
